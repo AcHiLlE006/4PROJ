@@ -1,2 +1,2 @@
 # 4PROJ
-This is the our 4PROJ's repository
+This is our 4PROJ's repository
