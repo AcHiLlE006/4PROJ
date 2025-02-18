@@ -8,7 +8,6 @@ import { MapComponent } from './components/map/map/map.component';
 @NgModule({
   declarations: [
     AppComponent,
-    MapComponent
   ],
   imports: [
     BrowserModule,
