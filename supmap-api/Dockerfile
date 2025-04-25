@@ -1,10 +1,28 @@
-FROM node:lts-alpine
-ENV NODE_ENV=production
+# Étape 1 : builder
+FROM node:18-alpine AS builder
 WORKDIR /usr/src/app
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
-RUN npm install --production --silent && mv node_modules ../
-COPY . .
-EXPOSE 3000
-RUN chown -R node /usr/src/app
-USER node
-CMD ["npm", "start"]
+
+# Copier et installer deps (seulement prod pour builder)
+COPY supmap-api/package*.json ./
+RUN npm ci
+
+# Copier le code et builder
+COPY supmap-api/ ./
+RUN npm run build
+
+# Étape 2 : runtime
+FROM node:18-alpine AS runner
+WORKDIR /usr/src/app
+
+# Copier uniquement ce qu’il faut
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/package*.json ./
+
+
+EXPOSE ${PORT}
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD wget --quiet --spider http://localhost:${PORT}/health || exit 1
+
+# Démarrage
+CMD ["node", "dist/main.js"]
