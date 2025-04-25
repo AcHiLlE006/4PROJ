@@ -22,6 +22,7 @@ yarn-error.log
 
 # Visual Studio Code
 .vscode/*
+*/.vscode/**/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -29,7 +30,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+*/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
@@ -40,3 +41,25 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# racine .gitignore
+
+# Ignorer les dossiers générés par npm
+**/node_modules/
+
+# Ignorer les builds front
+app-web/dist/
+app-web/build/
+app-web/coverage/
+app-web/.
+
+
+# Ignorer les builds back
+supmap-api/dist/
+
+# Fichiers d’environnement
+**/.env
+
+# Autres
+.vscode/
+.DS_Store
