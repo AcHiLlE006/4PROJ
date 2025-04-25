@@ -7,7 +7,7 @@ COPY supmap-api/package*.json ./
 RUN npm ci
 
 # Copier le code et builder
-COPY supmap-api/ ./
+COPY ./supmap-api/ ./
 RUN npm run build
 
 # Étape 2 : runtime
