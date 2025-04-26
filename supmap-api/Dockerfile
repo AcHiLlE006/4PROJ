@@ -3,7 +3,7 @@ FROM node:18-alpine AS builder
 WORKDIR /usr/src/app
 
 # Copier et installer deps (seulement prod pour builder)
-COPY supmap-api/package*.json ./
+COPY package*.json ./
 RUN npm ci
 
 # Copier le code et builder
