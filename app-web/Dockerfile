@@ -3,11 +3,11 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Ne copier que package*.json pour profiter du cache Docker
-COPY app-web/package*.json ./
+COPY ./package*.json ./
 RUN npm ci
 
 # Copier le reste et builder
-COPY app-web/ ./
+COPY . ./
 RUN npm run build -- --output-path=dist
 
 # Étape 2 : servir avec Nginx

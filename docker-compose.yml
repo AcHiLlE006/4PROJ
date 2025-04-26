@@ -8,6 +8,8 @@ services:
       - "80:80"
     depends_on:
       - supmapapi
+    env_file:
+      - ./.env
 
   supmapapi:
     build:
