@@ -18,7 +18,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 # Copier la conf qui ne contient QUE le bloc `server`
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=build /app/dist/mon-app /usr/share/nginx/html
+COPY --from=build /app/dist/app-web /usr/share/nginx/html
 EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=3s \
