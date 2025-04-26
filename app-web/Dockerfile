@@ -1,4 +1,4 @@
-# Étape 1 : build Angular
+# Build Angular
 FROM node:18-alpine AS build
 WORKDIR /app
 
@@ -10,17 +10,16 @@ RUN npm ci
 COPY . ./
 RUN npm run build -- --output-path=dist
 
-# Étape 2 : servir avec Nginx
 FROM nginx:alpine
-# Supprimer la configuration par défaut si besoin
+
+# Supprimer la conf d’example
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Copier la conf personnalisée
-COPY nginx.conf /etc/nginx/nginx.conf
+# Copier la conf qui ne contient QUE le bloc `server`
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copier les fichiers buildés
-COPY --from=build /app/dist /usr/share/nginx/html
-
+COPY --from=build /app/dist/mon-app /usr/share/nginx/html
 EXPOSE 80
+
 HEALTHCHECK --interval=30s --timeout=3s \
   CMD wget --quiet --spider http://localhost/ || exit 1
