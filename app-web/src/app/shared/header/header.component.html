@@ -1,0 +1,19 @@
+<nav class="site-header">
+    <div class="container">
+      <a class="logo" routerLink="/">MaApp</a>
+      <ul class="nav-links">
+        <li><a routerLink="/">Accueil</a></li>
+        <li><a routerLink="/about">À propos</a></li>
+        <!-- Si l'utilisateur n'est pas connecté -->
+      <li *ngIf="!isLoggedIn">
+        <a routerLink="/login">Se connecter</a>
+      </li>
+
+      <!-- Si l'utilisateur est connecté -->
+      <li *ngIf="isLoggedIn">
+        <a (click)="logout()" class="logout-button">Se déconnecter</a>
+      </li>
+      </ul>
+    </div>
+  </nav>
+  

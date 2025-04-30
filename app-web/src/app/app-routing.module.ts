@@ -5,15 +5,14 @@ import {DashboardComponent} from "./features/dashboard/dashboardPage/dashboard.c
 import {MapComponent} from "./features/navigation/mapPage/map.component";
 import {ReportComponent} from "./features/community/reportPage/report.component";
 import {RegisterComponent} from "./features/auth/registerPage/register.component";
-import {SettingsComponent} from "./features/settings/settingsPage/settings.component";
-import {LoginComponent} from "./features/auth/loginPage/login.component";
+import {LoginComponent} from "./features/auth/login-page/login.component";
 
 const routes: Routes = [
   {path: 'dashboard', component: DashboardComponent, title: "Were2go"},
   {path : 'navigation', component: MapComponent},
+  {path: '', redirectTo: 'navigation', pathMatch: 'full'},
   {path: 'report', component: ReportComponent},
   {path: 'register', component: RegisterComponent},
-  {path: 'settings', component: SettingsComponent},
   {path: 'login', component: LoginComponent},
 
 ]
