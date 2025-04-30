@@ -34,4 +34,12 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
+
+  register(email: string, password: string): Observable<void> {
+    return this.http
+      .post<LoginResponse>(`${process.env.API_URL}/auth/signup`, { email, password })
+      .pipe(
+        map(() => void 0)
+      );
+    }
 }

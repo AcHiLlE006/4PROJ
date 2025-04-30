@@ -4,7 +4,7 @@ import {RouterModule, Routes} from "@angular/router";
 import {DashboardComponent} from "./features/dashboard/dashboardPage/dashboard.component";
 import {MapComponent} from "./features/navigation/mapPage/map.component";
 import {ReportComponent} from "./features/community/reportPage/report.component";
-import {RegisterComponent} from "./features/auth/registerPage/register.component";
+import {RegisterComponent} from "./features/auth/register-page/register.component";
 import {LoginComponent} from "./features/auth/login-page/login.component";
 
 const routes: Routes = [

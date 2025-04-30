@@ -1,0 +1,28 @@
+<div class="register-container">
+    <h2>S'inscrire</h2>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label>Email</label>
+      <input formControlName="email" type="email" />
+      <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="error">
+        Email invalide
+      </div>
+  
+      <label>Mot de passe</label>
+      <input formControlName="password" type="password" />
+      <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="error">
+        Min. 6 caractères
+      </div>
+  
+      <label>Confirmer le mot de passe</label>
+      <input formControlName="confirm" type="password" />
+      <div *ngIf="form.hasError('mismatch') && form.get('confirm')?.touched" class="error">
+        Les mots de passe ne correspondent pas
+      </div>
+  
+      <button type="submit" [disabled]="loading || form.invalid">
+        {{ loading ? 'Inscription…' : 'S’inscrire' }}
+      </button>
+      <div *ngIf="error" class="error">{{ error }}</div>
+    </form>
+  </div>
+  
