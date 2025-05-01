@@ -1,14 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {RouterModule, Routes} from "@angular/router";
-import {DashboardComponent} from "./features/dashboard/dashboardPage/dashboard.component";
 import {MapComponent} from "./features/navigation/mapPage/map.component";
 import {ReportComponent} from "./features/community/reportPage/report.component";
 import {RegisterComponent} from "./features/auth/register-page/register.component";
 import {LoginComponent} from "./features/auth/login-page/login.component";
 
 const routes: Routes = [
-  {path: 'dashboard', component: DashboardComponent, title: "Were2go"},
   {path : 'navigation', component: MapComponent},
   {path: '', redirectTo: 'navigation', pathMatch: 'full'},
   {path: 'report', component: ReportComponent},

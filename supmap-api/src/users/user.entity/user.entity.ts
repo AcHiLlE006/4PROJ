@@ -6,10 +6,13 @@ export enum UserRole {
   MODERATOR = 'moderator',
 }
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
+  username: string;
 
   @Column({ unique: true })
   email: string;

@@ -31,9 +31,7 @@ import { FacebookStrategy } from './strategies/facebook.strategy/facebook.strate
     UsersService,
     AuthService,
     LocalStrategy,
-    JwtStrategy,
-    GoogleStrategy,
-    FacebookStrategy,
+    JwtStrategy
   ],
   controllers: [AuthController],
 })

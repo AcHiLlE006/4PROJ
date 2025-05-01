@@ -39,7 +39,9 @@
     "class-validator": "*",
     "class-transformer": "*",
     "reflect-metadata": "*",
-    "rxjs": "*"
+    "rxjs": "*",
+    "@nestjs/swagger": "*",
+    "swagger-ui-express": "*"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
