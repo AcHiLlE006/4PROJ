@@ -1,0 +1,41 @@
+.site-header {
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: #333;
+      }
+      .nav-links {
+        list-style: none;
+        display: flex;
+        margin-left: auto;
+        li {
+          margin-left: 1rem;
+          a {
+            text-decoration: none;
+            color: #555;
+            &:hover {
+              color: #000;
+            }
+          }
+        }
+      }
+    }
+    .logout-button {
+        cursor: pointer;
+        color: #d32f2f;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+      
+  }
+  

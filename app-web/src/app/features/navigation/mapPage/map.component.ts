@@ -1,5 +1,5 @@
 import {AfterViewInit, Component} from '@angular/core';
-import {MapService} from "../../../core/services/map.service";
+import {MapService} from "../map.service";
 
 @Component({
   selector: 'app-map',
