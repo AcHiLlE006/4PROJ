@@ -35,7 +35,7 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  register(email: string, password: string): Observable<void> {
+  register(username: string,email: string, password: string): Observable<void> {
     return this.http
       .post<LoginResponse>(`${process.env.API_URL}/auth/signup`, { email, password })
       .pipe(
