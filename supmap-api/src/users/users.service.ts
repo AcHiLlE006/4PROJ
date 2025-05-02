@@ -25,4 +25,24 @@ export class UsersService {
     const user = this.usersRepo.create({username, email, password: hash, role });
     return this.usersRepo.save(user);
   }
+
+  async findAllUsers(): Promise<User[]> {
+    return this.usersRepo.find();
+  }
+  async findUserById(id: string): Promise<User | undefined> {
+    const user = await this.usersRepo.findOne({ where: { id } });
+    return user ?? undefined;
+  }
+  async updateUser(id: string, userData: Partial<User>): Promise<User> {
+    await this.usersRepo.update(id, userData);
+    const updatedUser = await this.findUserById(id);
+    if (!updatedUser) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    return updatedUser;
+  }
+  async deleteUser(id: string): Promise<void> {
+    await this.usersRepo.delete(id);
+  }
+
 }
