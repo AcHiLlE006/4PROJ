@@ -37,8 +37,8 @@ export class RegisterComponent implements OnInit {
   submit() {
     if (this.form.invalid) { return; }
     this.loading = true;
-    const { email, password } = this.form.value;
-    this.auth.register(email, password).subscribe({
+    const { username, email, password } = this.form.value;
+    this.auth.register(username, email, password).subscribe({
       next: () => this.router.navigate(['/login']),
       error: err => {
         this.error = err.error?.message || 'Erreur lors de l’inscription';
