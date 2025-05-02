@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     role VARCHAR(20) DEFAULT 'contributor',
+    preferences JSONB DEFAULT '{"avoid_unpaved": false}',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -45,7 +46,6 @@ CREATE TABLE IF NOT EXISTS active_incidents (
 -- TABLE : archived_incidents
 CREATE TABLE IF NOT EXISTS archived_incidents (
     id UUID PRIMARY KEY,
-    user_id UUID,
     type_id INT,
     description TEXT,
     latitude DECIMAL(9,6),
@@ -68,3 +68,24 @@ SELECT u.id, it.id, 'Accident sur la route A7', 45.764043, 4.835659
 FROM users u, incident_types it
 WHERE u.username = 'testuser' AND it.name = 'accident'
 LIMIT 1;
+
+
+CREATE TABLE IF NOT EXISTS routes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+
+    origin_lat DECIMAL(9,6) NOT NULL,
+    origin_lon DECIMAL(9,6) NOT NULL,
+    destination_lat DECIMAL(9,6) NOT NULL,
+    destination_lon DECIMAL(9,6) NOT NULL,
+
+    -- Résultats OSRM
+    distance_m FLOAT NOT NULL,            -- en mètres
+    duration_s FLOAT NOT NULL,            -- en secondes
+    geometry JSONB NOT NULL,              -- GeoJSON LineString
+    legs JSONB,                           -- Étapes segmentées (si nécessaires)
+    waypoints JSONB,                      -- Lieux de passage (origine et destination)
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

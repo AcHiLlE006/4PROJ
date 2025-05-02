@@ -20,6 +20,12 @@ export class User {
   @Column()
   password: string; // stocké chiffré
 
+  @Column('jsonb', { nullable: true })
+  position: {
+    latitude: number;
+    longitude: number;
+  };
+
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role: UserRole;
 }
