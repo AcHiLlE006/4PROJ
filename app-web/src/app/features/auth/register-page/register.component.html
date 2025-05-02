@@ -1,6 +1,13 @@
 <div class="register-container">
     <h2>S'inscrire</h2>
     <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <label>Nom d'utilisateur</label>
+      <input formControlName="name" type="text" />
+      <div *ngIf="form.get('name')?.touched" class="error">
+        Nom invalide
+      </div>
+
       <label>Email</label>
       <input formControlName="email" type="email" />
       <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="error">
@@ -19,7 +26,7 @@
         Les mots de passe ne correspondent pas
       </div>
   
-      <button type="submit" [disabled]="loading || form.invalid">
+      <button type="submit" [disabled]="form.invalid">
         {{ loading ? 'Inscription…' : 'S’inscrire' }}
       </button>
       <div *ngIf="error" class="error">{{ error }}</div>
