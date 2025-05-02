@@ -39,7 +39,7 @@ export class RegisterComponent implements OnInit {
     this.loading = true;
     const { username, email, password } = this.form.value;
     this.auth.register(username, email, password).subscribe({
-      next: () => this.router.navigate(['/login']),
+      next: () => this.router.navigate(['/']),
       error: err => {
         this.error = err.error?.message || 'Erreur lors de l’inscription';
         this.loading = false;

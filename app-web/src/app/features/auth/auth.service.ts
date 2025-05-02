@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { env } from 'process';
+import { environment } from 'src/environments/environment';
 
 interface LoginResponse {
   access_token: string;
@@ -10,7 +10,7 @@ interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = `${process.env.API_URL}/auth`;  
+  private apiUrl = `${environment.apiUrl}/auth`;  
 
   constructor(private http: HttpClient) {}
 
@@ -37,7 +37,7 @@ export class AuthService {
 
   register(username: string,email: string, password: string): Observable<void> {
     return this.http
-      .post<LoginResponse>(`${process.env.API_URL}/auth/signup`, { email, password })
+      .post<LoginResponse>(`${environment.apiUrl}/auth/register`, {username, email, password })
       .pipe(
         map(() => void 0)
       );

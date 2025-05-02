@@ -3,7 +3,7 @@
     <form [formGroup]="form" (ngSubmit)="submit()">
 
       <label>Nom d'utilisateur</label>
-      <input formControlName="name" type="text" />
+      <input formControlName="username" type="text" />
       <div *ngIf="form.get('name')?.touched" class="error">
         Nom invalide
       </div>
