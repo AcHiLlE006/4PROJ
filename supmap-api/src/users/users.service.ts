@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
+
+// Define or import GeoPosition type
+export interface GeoPosition {
+  latitude: number;
+  longitude: number;
+}
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { User, UserRole } from './user.entity/user.entity';
 import * as bcrypt from 'bcrypt';
 
@@ -43,6 +49,46 @@ export class UsersService {
   }
   async deleteUser(id: string): Promise<void> {
     await this.usersRepo.delete(id);
+  }
+
+  /** Récupère uniquement les préférences */
+  async getPreferences(id: string): Promise<any> {
+    const user = await this.findUserById(id);
+    if (!user) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    const { preferences } = user;
+    return preferences;
+  }
+
+  /** Met à jour les préférences (patch) */
+  async updatePreferences(id: string, prefs: any): Promise<any> {
+    await this.usersRepo.update(id, { preferences: prefs } as DeepPartial<User>);
+    const updated = await this.findUserById(id);
+    if (!updated) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    return updated.preferences;
+  }
+
+  /** Récupère la position actuelle */
+  async getPosition(id: string): Promise<GeoPosition> {
+    const user = await this.findUserById(id);
+    if (!user) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    const { position } = user;
+    return position;
+  }
+
+  /** Met à jour la position */
+  async updatePosition(id: string, pos: GeoPosition): Promise<GeoPosition> {
+    await this.usersRepo.update(id, { position: pos } as DeepPartial<User>);
+    const updated = await this.findUserById(id);
+    if (!updated) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    return updated.position;
   }
 
 }

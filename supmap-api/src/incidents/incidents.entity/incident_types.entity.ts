@@ -7,4 +7,7 @@ export class IncidentType {
 
   @Column({ unique: true })
   name: string;
+
+  @Column({ type: 'int' })
+  penalty: number; // Pénalité associée à ce type d'incident
 }

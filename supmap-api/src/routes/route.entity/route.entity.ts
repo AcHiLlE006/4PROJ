@@ -4,7 +4,7 @@ import {
     ManyToMany
   } from 'typeorm';
   import { User } from '../../users/user.entity/user.entity';
-import { ActiveIncident } from 'src/incidents/incidents.entity/incident_active.entity';
+  import { ActiveIncident } from 'src/incidents/incidents.entity/incident_active.entity';
   
   @Entity('routes')
   export class Route {
@@ -13,14 +13,6 @@ import { ActiveIncident } from 'src/incidents/incidents.entity/incident_active.e
   
     @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
     user: User;
-
-    @ManyToMany(() => ActiveIncident)
-    @JoinTable({
-    name: 'routes_incidents',
-    joinColumn: { name: 'route_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'incident_id', referencedColumnName: 'id' },
-  })
-  incidentsOnRoad: ActiveIncident[];
   
     @Column('decimal', { precision: 9, scale: 6 })
     originLat: number;
@@ -35,21 +27,34 @@ import { ActiveIncident } from 'src/incidents/incidents.entity/incident_active.e
     destinationLon: number;
   
     @Column('float')
-    distanceM: number;
+    distance: number;
   
     @Column('float')
-    durationS: number;
+    duration: number;
   
     @Column('jsonb')
-    geometry: any; // GeoJSON LineString
+    geometry: any;
   
     @Column('jsonb', { nullable: true })
     legs: any;
   
     @Column('jsonb', { nullable: true })
     waypoints: any;
+
+    @Column('boolean', { default: false })
+    hasHighway: boolean;
+
+    @Column('float', { default: 0 })
+    score: number;
+  
+    @ManyToMany(() => ActiveIncident)
+    @JoinTable({
+      name: 'routes_incidents',
+      joinColumn: { name: 'route_id', referencedColumnName: 'id' },
+      inverseJoinColumn: { name: 'incident_id', referencedColumnName: 'id' },
+    })
+    incidentsOnRoad: ActiveIncident[];
   
     @CreateDateColumn()
     createdAt: Date;
   }
-  

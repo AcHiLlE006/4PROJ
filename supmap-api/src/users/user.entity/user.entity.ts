@@ -28,4 +28,9 @@ export class User {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role: UserRole;
+
+  @Column('jsonb', { default: false })
+  preferences: {
+    avoid_highways: boolean;
+}
 }
