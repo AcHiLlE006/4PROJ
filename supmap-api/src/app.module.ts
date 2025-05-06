@@ -7,6 +7,9 @@ import { IncidentsModule } from './incidents/incidents.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
+import { OsmModule } from './osm/osm.module';
+import { BreModule } from './bre/bre.module';
+import { NotificationModule } from './notification/notification.module';
 import * as nodeCrypto from 'crypto';
 
 // Polyfill minimal de Web Crypto pour que NestJS/TypeORM puisse appeler crypto.randomUUID()
@@ -37,7 +40,10 @@ if (typeof (globalThis as any).crypto === 'undefined') {
          database: configService.get<string>('DB_NAME'),
        }),
        inject: [ConfigService],
-     })],
+     }),
+     OsmModule,
+     BreModule,
+     NotificationModule],
       controllers: [],
       providers: [],
     })
