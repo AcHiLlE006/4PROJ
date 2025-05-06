@@ -4,7 +4,7 @@ import {
     ManyToMany
   } from 'typeorm';
   import { User } from '../../users/user.entity/user.entity';
-  import { ActiveIncident } from 'src/incidents/incidents.entity/incident_active.entity';
+  import { ActiveIncident } from '../../incidents/incidents.entity/incident_active.entity';
   
   @Entity('routes')
   export class Route {

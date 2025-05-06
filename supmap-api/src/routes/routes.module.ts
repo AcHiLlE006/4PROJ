@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { RoutesService } from './routes.service';
 import { RoutesController } from './routes.controller';
 import { Route } from './route.entity/route.entity';
-import { ActiveIncident } from 'src/incidents/incidents.entity/incident_active.entity';
-import { User } from 'src/users/user.entity/user.entity';
+import { ActiveIncident } from '../incidents/incidents.entity/incident_active.entity';
+import { User } from '../users/user.entity/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IncidentsModule } from 'src/incidents/incidents.module';
+import { IncidentsModule } from '../incidents/incidents.module';
+import { OsmModule } from '../osm/osm.module';
+import { BreModule } from '../bre/bre.module';
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { IncidentsModule } from 'src/incidents/incidents.module';
     IncidentsModule,
   ],
   providers: [RoutesService],
-  controllers: [RoutesController]
+  controllers: [RoutesController],
+  exports: [RoutesService]
 })
 export class RoutesModule {}

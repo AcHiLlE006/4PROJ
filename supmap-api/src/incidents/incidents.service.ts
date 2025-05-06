@@ -7,6 +7,8 @@ import { User } from '../users/user.entity/user.entity';
 import { ArchivedIncident } from './incidents.entity/incident_archived.entity';
 import { CreateIncidentDto } from './dto/create-incident.dto';
 import { UpdateIncidentStatusDto } from './dto/update-incident.dto';
+import { Route } from '../routes/route.entity/route.entity';
+import { RoutesService } from '../routes/routes.service';
 
 @Injectable()
 export class IncidentsService {
@@ -21,6 +23,7 @@ export class IncidentsService {
         private readonly userRepo: Repository<User>,
         @InjectRepository(IncidentType)
         private readonly typeRepo: Repository<IncidentType>,
+        private readonly routeService: RoutesService
     ) {}
 
     async findAllActiveIncidents(): Promise<ActiveIncident[]> {
@@ -71,6 +74,7 @@ export class IncidentsService {
         latitude: dto.latitude,
         longitude: dto.longitude,
         });
+        this.routeService.updateRouteImpacted(inc); // Met à jour les incidents sur la route
         return this.incidentsActiveRepo.save(inc);
     }
 

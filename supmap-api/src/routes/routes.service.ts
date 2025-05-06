@@ -10,6 +10,9 @@ import { BreService } from '../bre/bre.service';
 import { IncidentsService } from '../incidents/incidents.service';
 import { User } from '../users/user.entity/user.entity';
 import { ActiveIncident } from '../incidents/incidents.entity/incident_active.entity';
+import { booleanPointOnLine } from '@turf/turf';
+import { UsersService } from '../users/users.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class RoutesService {
@@ -21,6 +24,8 @@ export class RoutesService {
     private readonly osmService: OsmService,
     private readonly breService: BreService,
     private readonly incidentsService: IncidentsService,
+    private readonly userService: UsersService,
+    private readonly notificationService: NotificationService
   ) {}
 
 
@@ -82,4 +87,42 @@ export class RoutesService {
     await this.routeRepo.remove(route);
 
   }
+  //** Recherche et Met à jour les routes impactée par un incident créer */
+  async updateRouteImpacted(incident: ActiveIncident
+  ): Promise<void > {
+    //  Récupérer toutes les routes (avec géométrie et user pour prefs)
+    const allRoutes = await this.routeRepo.find();
+
+    // Filtrer celles passant par l'incident (tolérance ~50m)
+    const pt = turf.point([incident.longitude, incident.latitude]);
+    const impacted = allRoutes.filter(route => {
+      const line = turf.lineString((route.geometry as any).coordinates);
+      return booleanPointOnLine(pt, line, { tolerance: 0.0005 });
+    });
+
+    const results = [];
+
+    //Pour chaque route impactée, relancer un nouveau calcul
+    //    et mettre à jour la base si besoin
+    for (const route of impacted) {
+      route.incidentsOnRoad.push(incident);
+
+      const position = await this.userService.getPosition(route.user.id);
+      
+      this.userService.updatePosition(route.user.id, position);
+      
+      this.createRoute(route.user.id, {
+        originLat: position.latitude,
+        originLon: position.longitude,
+        destinationLat: route.destinationLat,
+        destinationLon: route.destinationLon}) 
+        .then((suggestions) => {
+          const best = suggestions[0]; // Meilleure suggestion
+          this.notificationService.notifyRouteImpacted(
+            route.user.id,
+            suggestions,
+          );
+        })
+  }
+}
 }

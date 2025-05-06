@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as turf from '@turf/turf';
 import booleanPointOnLine from '@turf/boolean-point-on-line';
-import { ActiveIncident } from 'src/incidents/incidents.entity/incident_active.entity';
-import { IncidentsService } from 'src/incidents/incidents.service';
-import { Route } from 'src/routes/route.entity/route.entity';
-import { OsmService } from 'src/osm/osm.service';
+import { ActiveIncident } from '../incidents/incidents.entity/incident_active.entity';
+import { IncidentsService } from '../incidents/incidents.service';
+import { Route } from '../routes/route.entity/route.entity';
+import { OsmService } from '../osm/osm.service';
 
 
 @Injectable()
@@ -47,7 +47,7 @@ export class BreService {
       });
 
       // Détection autoroute
-      const hasHighway = route.legs?.some(leg => leg.roadType === 'highway') ?? false;
+      const hasHighway = route.legs?.some(leg => leg.roadType === 'motorway') ?? false;
 
       // Calcul du score
       let score = route.duration;
