@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register/register.dto';
-import { LoginDto } from './dto/login/login.dto';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { JwtGuard } from './guards/jwt.guard';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -19,7 +20,8 @@ describe('AuthController', () => {
       providers: [
         { provide: AuthService, useValue: authService },
       ],
-    }).compile();
+    }).overrideGuard(JwtGuard).useValue({ canActivate: () => true })
+    .compile();
 
     controller = module.get<AuthController>(AuthController);
   });

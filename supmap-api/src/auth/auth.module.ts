@@ -8,11 +8,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity/user.entity';
-import { LocalStrategy } from './strategies/local.strategy/local.strategy';
-import { JwtStrategy } from './strategies/jwt.strategy/jwt.strategy';
-import { GoogleStrategy } from './strategies/google.strategy/google.strategy';
-import { FacebookStrategy } from './strategies/facebook.strategy/facebook.strategy';
-import { JwtGuard } from './guards/jwt/jwt.guard';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { FacebookStrategy } from './strategies/facebook.strategy';
+import { JwtGuard } from './guards/jwt.guard';
 
 @Module({
   imports: [

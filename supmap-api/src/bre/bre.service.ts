@@ -11,7 +11,8 @@ import { OsmService } from '../osm/osm.service';
 export class BreService {
     
     constructor(
-        private readonly osmService: OsmService) {}
+        private readonly osmService: OsmService,
+        private readonly incidentService: IncidentsService) {}
   /**
    * Trie et annote les itinéraires bruts selon :
    * - pénalités issues des types d'incident
@@ -35,12 +36,14 @@ export class BreService {
       let incidentPenaltySum = 0;
 
       // Annotation incidents
-      incidents.forEach(i => {
+      incidents.forEach(async i => {
         const pt = turf.point([i.longitude, i.latitude]);
         // Vérification si le point de l'incident est sur la ligne de l'itinéraire
         if (booleanPointOnLine(pt, line)) {
           incidentIds.push(i.id);
-          incidentPenaltySum += i.type.penalty; // Pénalité associée à ce type d'incident
+
+          const incidentType = await this.incidentService.findIncidentTypeById(i.typeId);
+          incidentPenaltySum += incidentType?.penalty ?? 0; // Pénalité associée à ce type d'incident
           route.incidentsOnRoad.push(i); // Ajout de l'incident à la route
         }
       });

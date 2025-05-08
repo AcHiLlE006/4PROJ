@@ -27,6 +27,6 @@ export class User {
   role: UserRole = UserRole.USER;
 
   @Column('simple-json')
-  preferences: { avoid_highways: boolean };
+  preferences: { avoid_highways: boolean } = { avoid_highways: false };
 }
 

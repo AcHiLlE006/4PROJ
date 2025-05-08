@@ -12,9 +12,8 @@ import {
   import { IncidentsService } from './incidents.service';
   import { CreateIncidentDto } from './dto/create-incident.dto';
   import { UpdateIncidentStatusDto } from './dto/update-incident.dto';
-  import { JwtGuard } from '../auth/guards/jwt/jwt.guard';
+  import { JwtGuard } from '../auth/guards/jwt.guard';
   import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-  import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
   
   @Controller('incidents')
   export class IncidentsController {
