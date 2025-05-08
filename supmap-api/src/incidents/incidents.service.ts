@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ActiveIncident } from './incidents.entity/incident_active.entity'; 
@@ -23,7 +23,8 @@ export class IncidentsService {
         private readonly userRepo: Repository<User>,
         @InjectRepository(IncidentType)
         private readonly typeRepo: Repository<IncidentType>,
-        private readonly routeService: RoutesService
+        @Inject(forwardRef(() => RoutesService))  
+    private readonly routeService: RoutesService,
     ) {}
 
     async findAllActiveIncidents(): Promise<ActiveIncident[]> {

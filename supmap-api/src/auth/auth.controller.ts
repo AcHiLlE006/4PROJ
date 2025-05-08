@@ -24,7 +24,6 @@ export class AuthController {
     return { message: 'Utilisateur créé', body: user};
   }
 
-  @UseGuards(LocalGuard)
   @Post('login')
   @ApiOperation({ summary: 'Connexion d\'un utilisateur' })
   @ApiResponse({ status: 200, description: 'Connexion réussie.' })
@@ -38,7 +37,10 @@ export class AuthController {
   @ApiOperation({ summary: 'Récupérer le profil de l\'utilisateur' })
   @ApiResponse({ status: 200, description: 'Profil récupéré avec succès.' })
   getProfile(@Request() req) {
-    return req.user;
+    const u = req.user as any;
+    // on lit d’abord userId, sinon sub, sinon id
+    const userId = u.userId ?? u.sub ?? u.id;
+    return this.authService.getUserById(userId);
   }
 
   // OAuth2 routes

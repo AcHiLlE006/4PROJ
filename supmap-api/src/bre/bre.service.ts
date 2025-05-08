@@ -11,7 +11,6 @@ import { OsmService } from '../osm/osm.service';
 export class BreService {
     
     constructor(
-        private readonly incidentsService: IncidentsService,
         private readonly osmService: OsmService) {}
   /**
    * Trie et annote les itinéraires bruts selon :

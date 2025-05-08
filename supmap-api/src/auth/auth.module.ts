@@ -12,6 +12,7 @@ import { LocalStrategy } from './strategies/local.strategy/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy/google.strategy';
 import { FacebookStrategy } from './strategies/facebook.strategy/facebook.strategy';
+import { JwtGuard } from './guards/jwt/jwt.guard';
 
 @Module({
   imports: [
@@ -31,8 +32,10 @@ import { FacebookStrategy } from './strategies/facebook.strategy/facebook.strate
     UsersService,
     AuthService,
     LocalStrategy,
-    JwtStrategy
+    JwtStrategy,
+    JwtGuard
   ],
   controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule {}

@@ -19,7 +19,8 @@ export class AuthService {
 
     // Création de l'utilisateur (hash du mot de passe dans UsersService)
     const user = await this.usersService.createUser(dto.username, dto.email, dto.password);
-    // Optionnel : retourner directement un token
+    
+    
     const payload = { sub: user.id, email: user.email, role: user.role };
     return { access_token: this.jwtService.sign(payload) };
   }
@@ -37,4 +38,9 @@ export class AuthService {
     if (!match) throw new UnauthorizedException('Identifiants invalides');
     return user;
   }
+
+  async getUserById(id: string) {
+    const user = await this.usersService.findUserById(id);
+    if (!user) throw new UnauthorizedException('Utilisateur non trouvé');
+    return user;}
 }
