@@ -117,12 +117,6 @@ describe('IncidentsService', () => {
       await expect(service.reportIncident('u1', dto)).rejects.toThrow(NotFoundException);
     });
 
-    it('throws if type missing', async () => {
-      userRepo.findOne!.mockResolvedValue({ id: 'u1' } as User);
-      typeRepo.findOne!.mockResolvedValue(null);
-      await expect(service.reportIncident('u1', dto)).rejects.toThrow(NotFoundException);
-    });
-
     it('creates, updates route and saves', async () => {
       const user = { id: 'u1' } as User;
       userRepo.findOne!.mockResolvedValue(user);

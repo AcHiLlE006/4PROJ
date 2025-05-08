@@ -74,6 +74,8 @@ export class IncidentsService {
     async reportIncident(userId: string, dto: CreateIncidentDto): Promise<ActiveIncident> {
         const user = await this.userRepo.findOne({ where: { id: userId } });
         if (!user) throw new NotFoundException(`User ${userId} not found`);
+        if (!dto.typeId) throw new NotFoundException(`Incident type ${dto.typeId} not found`); 
+        
 
         const inc = this.incidentsActiveRepo.create({
         user,

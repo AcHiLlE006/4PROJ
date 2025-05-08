@@ -30,23 +30,21 @@ export class BreService {
     const rawRoutes = this.osmService.getRawRoutes({origin, destination});
 
     // Scoring initial
-    const scored: Route[] = (await rawRoutes).map(route => {
+    const scored: Route[] = await Promise.all((await rawRoutes).map(async route => {
       const line = turf.lineString(route.geometry.coordinates);
       const incidentIds: string[] = [];
       let incidentPenaltySum = 0;
 
       // Annotation incidents
-      incidents.forEach(async i => {
+      for (const i of incidents) {
         const pt = turf.point([i.longitude, i.latitude]);
-        // Vérification si le point de l'incident est sur la ligne de l'itinéraire
         if (booleanPointOnLine(pt, line)) {
           incidentIds.push(i.id);
-
-          const incidentType = await this.incidentService.findIncidentTypeById(i.typeId);
-          incidentPenaltySum += incidentType?.penalty ?? 0; // Pénalité associée à ce type d'incident
-          route.incidentsOnRoad.push(i); // Ajout de l'incident à la route
+          const itype = await this.incidentService.findIncidentTypeById(i.typeId);
+          incidentPenaltySum += itype?.penalty ?? 0;
+          route.incidentsOnRoad.push(i);
         }
-      });
+      }
 
       // Détection autoroute
       const hasHighway = route.legs?.some(leg => leg.roadType === 'motorway') ?? false;
@@ -61,7 +59,7 @@ export class BreService {
       }
 
       return { ...route, incidentIds, score, hasHighway };
-    });
+    }));
 
     // 2) Tri par score
     const sorted = scored.sort((a, b) => a.score - b.score);
