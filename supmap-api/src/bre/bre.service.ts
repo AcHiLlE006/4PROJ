@@ -11,8 +11,8 @@ import { OsmService } from '../osm/osm.service';
 export class BreService {
     
     constructor(
-        private readonly incidentsService: IncidentsService,
-        private readonly osmService: OsmService) {}
+        private readonly osmService: OsmService,
+        private readonly incidentService: IncidentsService) {}
   /**
    * Trie et annote les itinéraires bruts selon :
    * - pénalités issues des types d'incident
@@ -30,21 +30,21 @@ export class BreService {
     const rawRoutes = this.osmService.getRawRoutes({origin, destination});
 
     // Scoring initial
-    const scored: Route[] = (await rawRoutes).map(route => {
+    const scored: Route[] = await Promise.all((await rawRoutes).map(async route => {
       const line = turf.lineString(route.geometry.coordinates);
       const incidentIds: string[] = [];
       let incidentPenaltySum = 0;
 
       // Annotation incidents
-      incidents.forEach(i => {
+      for (const i of incidents) {
         const pt = turf.point([i.longitude, i.latitude]);
-        // Vérification si le point de l'incident est sur la ligne de l'itinéraire
         if (booleanPointOnLine(pt, line)) {
           incidentIds.push(i.id);
-          incidentPenaltySum += i.type.penalty; // Pénalité associée à ce type d'incident
-          route.incidentsOnRoad.push(i); // Ajout de l'incident à la route
+          const itype = await this.incidentService.findIncidentTypeById(i.typeId);
+          incidentPenaltySum += itype?.penalty ?? 0;
+          route.incidentsOnRoad.push(i);
         }
-      });
+      }
 
       // Détection autoroute
       const hasHighway = route.legs?.some(leg => leg.roadType === 'motorway') ?? false;
@@ -59,7 +59,7 @@ export class BreService {
       }
 
       return { ...route, incidentIds, score, hasHighway };
-    });
+    }));
 
     // 2) Tri par score
     const sorted = scored.sort((a, b) => a.score - b.score);

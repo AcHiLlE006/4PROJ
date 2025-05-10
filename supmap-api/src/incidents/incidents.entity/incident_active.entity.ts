@@ -12,8 +12,8 @@ import {
     @ManyToOne(() => User, { nullable: false })
     user: User;
   
-    @ManyToOne(() => IncidentType, { nullable: false })
-    type: IncidentType;
+    @Column()
+    typeId: number;
   
     @Column({ nullable: true })
     description: string;

@@ -1,5 +1,5 @@
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -10,7 +10,7 @@ import { BreService } from '../bre/bre.service';
 import { IncidentsService } from '../incidents/incidents.service';
 import { User } from '../users/user.entity/user.entity';
 import { ActiveIncident } from '../incidents/incidents.entity/incident_active.entity';
-import { booleanPointOnLine } from '@turf/turf';
+import booleanPointOnLine from '@turf/boolean-point-on-line';
 import { UsersService } from '../users/users.service';
 import { NotificationService } from '../notification/notification.service';
 
@@ -21,8 +21,9 @@ export class RoutesService {
     private readonly routeRepo: Repository<Route>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private readonly osmService: OsmService,
+    @Inject(forwardRef(() => BreService))
     private readonly breService: BreService,
+    @Inject(forwardRef(() => IncidentsService))
     private readonly incidentsService: IncidentsService,
     private readonly userService: UsersService,
     private readonly notificationService: NotificationService
@@ -87,6 +88,9 @@ export class RoutesService {
     await this.routeRepo.remove(route);
 
   }
+
+
+
   //** Recherche et Met à jour les routes impactée par un incident créer */
   async updateRouteImpacted(incident: ActiveIncident
   ): Promise<void > {
@@ -97,7 +101,7 @@ export class RoutesService {
     const pt = turf.point([incident.longitude, incident.latitude]);
     const impacted = allRoutes.filter(route => {
       const line = turf.lineString((route.geometry as any).coordinates);
-      return booleanPointOnLine(pt, line, { tolerance: 0.0005 });
+      return booleanPointOnLine(pt, line);
     });
 
     const results = [];
@@ -109,6 +113,10 @@ export class RoutesService {
 
       const position = await this.userService.getPosition(route.user.id);
       
+      if (!position) {
+        throw new NotFoundException(`Position for user ${route.user.id} not found`);
+      }
+
       this.userService.updatePosition(route.user.id, position);
       
       this.createRoute(route.user.id, {

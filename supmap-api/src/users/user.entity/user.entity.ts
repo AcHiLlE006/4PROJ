@@ -20,17 +20,13 @@ export class User {
   @Column()
   password: string; // stocké chiffré
 
-  @Column('jsonb', { nullable: true })
-  position: {
-    latitude: number;
-    longitude: number;
-  };
+  @Column('simple-json', { nullable: true })
+  position: { latitude: number; longitude: number } | null = null;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
-  role: UserRole;
+  @Column({ type: 'simple-enum', enum: UserRole, default: UserRole.USER })
+  role: UserRole = UserRole.USER;
 
-  @Column('jsonb', { default: false })
-  preferences: {
-    avoid_highways: boolean;
+  @Column('simple-json')
+  preferences: { avoid_highways: boolean } = { avoid_highways: false };
 }
-}
+

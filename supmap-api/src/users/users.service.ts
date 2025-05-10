@@ -28,7 +28,7 @@ export class UsersService {
                     role: UserRole = UserRole.USER): Promise<User> {
 
     const hash = await bcrypt.hash(plainPassword, 10);
-    const user = this.usersRepo.create({username, email, password: hash, role });
+    const user = this.usersRepo.create({username, email, password: hash, role ,preferences: { avoid_highways: false }});
     return this.usersRepo.save(user);
   }
 
@@ -72,7 +72,7 @@ export class UsersService {
   }
 
   /** Récupère la position actuelle */
-  async getPosition(id: string): Promise<GeoPosition> {
+  async getPosition(id: string): Promise<GeoPosition | null> {
     const user = await this.findUserById(id);
     if (!user) {
       throw new Error(`User with ID ${id} not found`);
@@ -82,7 +82,7 @@ export class UsersService {
   }
 
   /** Met à jour la position */
-  async updatePosition(id: string, pos: GeoPosition): Promise<GeoPosition> {
+  async updatePosition(id: string, pos: GeoPosition): Promise<GeoPosition | null> {
     await this.usersRepo.update(id, { position: pos } as DeepPartial<User>);
     const updated = await this.findUserById(id);
     if (!updated) {

@@ -1,105 +1,108 @@
 import { BreService } from './bre.service';
 import { OsmService } from '../osm/osm.service';
-import * as turf from '@turf/turf';
+import { IncidentsService } from '../incidents/incidents.service';
 import { ActiveIncident } from '../incidents/incidents.entity/incident_active.entity';
+import booleanPointOnLine from '@turf/boolean-point-on-line';
 
 describe('BreService', () => {
-  let breService: BreService;
-  let osmServiceMock: Partial<OsmService>;
+  let service: BreService;
+  let osmService: Partial<OsmService>;
+  let incidentsService: Partial<IncidentsService>;
 
   beforeEach(() => {
-    osmServiceMock = {
-      getRawRoutes: jest.fn(),
-    };
-    breService = new BreService({} as any, osmServiceMock as OsmService);
+    osmService = { getRawRoutes: jest.fn() };
+    incidentsService = { findIncidentTypeById: jest.fn() };
+    service = new BreService(
+      osmService as OsmService,
+      incidentsService as IncidentsService,
+    );
   });
 
-  it('should return 3 routes sorted by score and include a highway-free route even when avoid_highways is false', async () => {
-    const rawRoutes = [
-      {
-        geometry: turf.lineString([[0, 0], [1, 1]]).geometry,
-        distance: 100,
-        duration: 100,
-        legs: [{ roadType: 'motorway' }],
-        incidentsOnRoad: [],
-      },
-      {
-        geometry: turf.lineString([[0, 0], [2, 2]]).geometry,
-        distance: 200,
-        duration: 200,
-        legs: [{ roadType: 'residential' }],
-        incidentsOnRoad: [],
-      },
-      {
-        geometry: turf.lineString([[0, 0], [3, 3]]).geometry,
-        distance: 300,
-        duration: 300,
-        legs: [{ roadType: 'motorway' }],
-        incidentsOnRoad: [],
-      },
-      {
-        geometry: turf.lineString([[0, 0], [4, 4]]).geometry,
-        distance: 400,
-        duration: 400,
-        legs: [{ roadType: 'residential' }],
-        incidentsOnRoad: [],
-      },
+  it('sorts routes by score and returns exactly 3', async () => {
+    // Simule 4 routes sans incidents ni autoroutes
+    const routes = [
+      { geometry:{coordinates:[[0,0],[1,1]]}, legs:[{roadType:'primary'}], distance:100, duration:100, incidentsOnRoad:[] },
+      { geometry:{coordinates:[[0,0],[2,2]]}, legs:[{roadType:'primary'}], distance:200, duration:50, incidentsOnRoad:[] },
+      { geometry:{coordinates:[[0,0],[3,3]]}, legs:[{roadType:'primary'}], distance:300, duration:10, incidentsOnRoad:[] },
+      { geometry:{coordinates:[[0,0],[4,4]]}, legs:[{roadType:'primary'}], distance:400, duration:5, incidentsOnRoad:[] },
     ];
-    (osmServiceMock.getRawRoutes as jest.Mock).mockResolvedValue(rawRoutes);
+    (osmService.getRawRoutes as jest.Mock).mockResolvedValue(routes as any);
 
-    const destination: [number, number] = [1, 1];
-    const origin: [number, number] = [0, 0];
-    const preferences = { avoid_highways: false };
-    const incidents: ActiveIncident[] = [
-      {
-        id: 'inc1',
-        latitude: 2,
-        longitude: 2,
-        type: { id: 1, name: 'test', penalty: 50 },
-      } as any,
-    ];
-
-    const result = await breService.sortAndAnnotate(destination, origin, preferences, incidents);
+    const result = await service.sortAndAnnotate(
+      [4,4], [0,0],
+      { avoid_highways: false },
+      [],
+    );
 
     expect(result).toHaveLength(3);
-    // Ensure sorted by ascending score
-    for (let i = 0; i < result.length - 1; i++) {
-      expect(result[i].score).toBeLessThanOrEqual(result[i + 1].score);
-    }
-    // Ensure at least one highway-free route
-    expect(result.some(r => !r.hasHighway)).toBe(true);
+    const scores = result.map(r => r.score);
+    expect(scores).toEqual([40, 45, 70]);
+
   });
 
-  it('should apply highway avoidance penalty when requested', async () => {
-    const rawRoutes = [
-      {
-        geometry: turf.lineString([[0, 0], [1, 1]]).geometry,
-        distance: 100,
-        duration: 100,
-        legs: [{ roadType: 'motorway' }],
-        incidentsOnRoad: [],
-      },
-      {
-        geometry: turf.lineString([[0, 0], [2, 2]]).geometry,
-        distance: 200,
-        duration: 200,
-        legs: [{ roadType: 'residential' }],
-        incidentsOnRoad: [],
-      },
-      {
-        geometry: turf.lineString([[0, 0], [3, 3]]).geometry,
-        distance: 300,
-        duration: 300,
-        legs: [{ roadType: 'residential' }],
-        incidentsOnRoad: [],
-      },
-    ];
-    (osmServiceMock.getRawRoutes as jest.Mock).mockResolvedValue(rawRoutes);
+  it('applies incident penalties and annotates incidentsOnRoad', async () => {
+    // Une route avec une unique arête de (0,0)->(1,1)
+    const route = {
+      geometry:{coordinates:[[0,0],[1,1]]},
+      legs:[{roadType:'primary'}],
+      distance:1,
+      duration:1,
+      incidentsOnRoad: [] as ActiveIncident[],
+    };
+    (osmService.getRawRoutes as jest.Mock).mockResolvedValue([route] as any);
 
-    const result = await breService.sortAndAnnotate([1, 1], [0, 0], { avoid_highways: true }, []);
+    // Un incident précisément SUR la ligne
+    const incident = {
+      id: 'X1',
+      latitude: 1,
+      longitude: 1,
+      typeId: 42,
+      incidentsOnRoad: [],
+      confirmedCount: 0,
+      deniedCount: 0,
+      reportedAt: new Date(),
+      user: { id: 'mockUserId', name: 'Mock User' } as any, // Mock User object
+      description: '', // Add appropriate mock value for 'description'
+    } as ActiveIncident;
+    // Pénalité mockée
+    (incidentsService.findIncidentTypeById as jest.Mock)
+      .mockResolvedValue({ id: 42, name: '', penalty: 100 });
 
-    const highwayRoute = result.find(r => r.hasHighway);
-    const nonHighwayRoute = result.find(r => !r.hasHighway);
-    expect((highwayRoute?.score ?? 0)).toBeGreaterThan((nonHighwayRoute?.score ?? 0));
+    const result = await service.sortAndAnnotate(
+      [1,1], [0,0],
+      { avoid_highways: false },
+      [incident],
+    );
+
+    expect(result).toHaveLength(1);
+    const out = result[0];
+    // l'incident est retrouvé
+    expect(out.incidentsOnRoad).toContain(incident);
+    // score = duration(1) + distance*0.1(0.1) + penalty(100)
+    expect(out.score).toBeCloseTo(1 + 0.1 + 100, 5);
+  });
+
+  it('penalizes highways when requested', async () => {
+    // Route longue mais sur autoroute
+    const route = {
+      geometry:{coordinates:[[0,0],[1,1]]},
+      legs:[{roadType:'motorway'}],
+      distance:1,
+      duration:1,
+      incidentsOnRoad: [] as ActiveIncident[],
+    };
+    (osmService.getRawRoutes as jest.Mock).mockResolvedValue([route] as any);
+    (incidentsService.findIncidentTypeById as jest.Mock).mockResolvedValue(null);
+
+    const result = await service.sortAndAnnotate(
+      [1,1], [0,0],
+      { avoid_highways: true },
+      [],
+    );
+    expect(result).toHaveLength(1);
+    const out = result[0];
+    expect(out.hasHighway).toBe(true);
+    // score = 1 + 0.1 + 600
+    expect(out.score).toBeCloseTo(1 + 0.1 + 600, 5);
   });
 });

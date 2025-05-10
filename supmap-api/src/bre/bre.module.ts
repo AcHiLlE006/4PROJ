@@ -1,12 +1,11 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BreService } from './bre.service';
 import { OsmModule } from '../osm/osm.module';
 import { IncidentsModule } from '../incidents/incidents.module';
 
 @Module({
   imports: [
-    OsmModule,
-    IncidentsModule
+    OsmModule
   ],
   providers: [BreService],
   exports: [BreService],

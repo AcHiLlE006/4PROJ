@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ActiveIncident } from './incidents.entity/incident_active.entity'; 
@@ -23,7 +23,8 @@ export class IncidentsService {
         private readonly userRepo: Repository<User>,
         @InjectRepository(IncidentType)
         private readonly typeRepo: Repository<IncidentType>,
-        private readonly routeService: RoutesService
+        @Inject(forwardRef(() => RoutesService))  
+    private readonly routeService: RoutesService,
     ) {}
 
     async findAllActiveIncidents(): Promise<ActiveIncident[]> {
@@ -35,13 +36,23 @@ export class IncidentsService {
         if (!incident) {
             throw new Error(`Incident with ID ${id} not found`);
         }
-        const archivedIncident = this.incidentsArchivedRepo.create(incident);
-        await this.incidentsArchivedRepo.save(archivedIncident);
+        const archived = this.incidentsArchivedRepo.create({
+            id:             incident.id,
+            typeId:         incident.typeId,  // ← champ NOT NULL
+            description:    incident.description,
+            latitude:       incident.latitude,
+            longitude:      incident.longitude,
+            reportedAt:     incident.reportedAt,
+            resolvedAt:     new Date(),                // ← champ NOT NULL
+            confirmedCount: incident.confirmedCount,
+            deniedCount:    incident.deniedCount,
+          });
+        await this.incidentsArchivedRepo.save(archived);
         await this.incidentsActiveRepo.delete(id);
-        return archivedIncident;
+        return archived;
     }
 
-    async findIncidentTypeById(id: string): Promise<IncidentType | undefined> {
+    async findIncidentTypeById(id: number): Promise<IncidentType | undefined> {
         const incidentType = await this.incidentTypeRepo.findOne({ where: { id: Number(id) } });
         return incidentType ?? undefined;
     }
@@ -63,13 +74,13 @@ export class IncidentsService {
     async reportIncident(userId: string, dto: CreateIncidentDto): Promise<ActiveIncident> {
         const user = await this.userRepo.findOne({ where: { id: userId } });
         if (!user) throw new NotFoundException(`User ${userId} not found`);
-
-        const type = await this.typeRepo.findOne({ where: { id: dto.typeId } });
-        if (!type) throw new NotFoundException(`IncidentType ${dto.typeId} not found`);
+        if (!dto.typeId) throw new NotFoundException(`Incident type ${dto.typeId} not found`); 
+        
 
         const inc = this.incidentsActiveRepo.create({
         user,
-        type,
+        typeId: dto.typeId,
+        reportedAt: new Date(),
         description: dto.description,
         latitude: dto.latitude,
         longitude: dto.longitude,
@@ -87,7 +98,7 @@ export class IncidentsService {
         id: string,
         dto: UpdateIncidentStatusDto,
     ): Promise<ActiveIncident | ArchivedIncident> {
-        const inc = await this.incidentsActiveRepo.findOne({ where: { id }, relations: ['type', 'user'] });
+        const inc = await this.incidentsActiveRepo.findOne({ where: { id } });
         if (!inc) throw new NotFoundException(`ActiveIncident ${id} not found`);
 
         if (dto.isStillPresent) {
@@ -100,20 +111,7 @@ export class IncidentsService {
             return inc;
         } else {
         // création de l’archive
-        const archived = this.incidentsArchivedRepo.create({
-            id: inc.id,
-            typeId: inc.type.id,
-            description: inc.description,
-            latitude: inc.latitude,
-            longitude: inc.longitude,
-            reportedAt: inc.reportedAt,
-            resolvedAt: new Date(),
-            confirmedCount: inc.confirmedCount,
-            deniedCount: inc.deniedCount,
-        });
-        await this.incidentsArchivedRepo.save(archived);
-        await this.incidentsActiveRepo.delete(id);
-        return archived;
+        return this.ArchiveIncident(id);
         }
     }
 
