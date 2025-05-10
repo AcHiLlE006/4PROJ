@@ -1,0 +1,28 @@
+{
+  "name": "SUPMAP",
+  "logo": "docs/logo.png",
+  "theme": "mint",
+  "colors": {
+    "primary": "#4CAF50"
+  },
+  "navigation": {
+    "languages": [],
+    "versions": [],
+    "tabs": [],
+    "dropdowns": [],
+    "anchors": [],
+    "groups": [],
+    "pages": [
+      {
+        "label": "Documentation",
+        "href": "",
+        "children": [
+          { "label": "Accueil", "href": "index.md" },
+          { "label": "Architecture", "href": "architecture.md" },
+          { "label": "API", "href": "api.md" },
+          { "label": "Base de données", "href": "database.md" }
+        ]
+      }
+    ]
+  }
+}
