@@ -8,12 +8,17 @@
   },
   "navigation": [
     {
-      "label": "Documentation",
+      "group": "Documentation",
       "pages": [
-        { "label": "Accueil", "href": "index.md" },
-        { "label": "Architecture", "href": "architecture.md" },
-        { "label": "API", "href": "api.md" },
-        { "label": "Base de données", "href": "database.md" }
+        {
+          "group": "Pages",
+          "pages": [
+            "index.md",
+            "architecture.md",
+            "api.md",
+            "database.md"
+          ]
+        }
       ]
     }
   ]
