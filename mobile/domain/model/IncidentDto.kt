@@ -1,0 +1,1 @@
+data class IncidentDto(val id: String, val type: String, val lat: Double, val lng: Double, val validated: Boolean)
