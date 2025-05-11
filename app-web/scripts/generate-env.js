@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 
-const env = dotenv.config({ path: path.resolve(__dirname, '../../.env') }).parsed;
-if (!env || !env.API_URL) {
-  console.error('❌ Impossible de charger API_URL depuis .env');
+const apiUrl = process.env.API_URL;
+if (!apiUrl) {
+  console.error("❌ Impossible de charger API_URL depuis .env");
   process.exit(1);
 }
 
