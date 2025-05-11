@@ -20,10 +20,10 @@ if (!apiUrl) {
 const tplPath = path.resolve(__dirname, '../src/environments/environment.ts.template');
 let content = fs.readFileSync(tplPath, 'utf8');
 
-content = content.replace(/__API_URL__/g, env.API_URL);
+content = content.replace(/__API_URL__/g, apiUrl);
 
 
 const outPath = path.resolve(__dirname, '../src/environments/environment.ts');
 fs.writeFileSync(outPath, content, 'utf8');
 
-console.log(`✅ src/environments/environment.ts généré avec apiUrl=${env.API_URL}`);
+console.log(`✅ src/environments/environment.ts généré avec apiUrl=${apiUrl}`);
