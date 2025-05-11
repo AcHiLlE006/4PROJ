@@ -29,7 +29,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
     @ApiResponse({
       status: 400, description: 'Erreur lors de la création de l\'itinéraire.' })
     async create(@Req() req, @Body() dto: CreateRouteDto) {
-      return this.svc.createRoute(req.user.userId, dto);
+      return this.svc.createRoute(req.userId, dto);
     }
   
     /** GET /routes */

@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RoutesModule } from './routes/routes.module';
-import { TrafficModule } from './traffic/traffic.module';
 import { IncidentsModule } from './incidents/incidents.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -25,7 +24,6 @@ if (typeof (globalThis as any).crypto === 'undefined') {
   imports: [AuthModule,
      UsersModule,
      RoutesModule,
-     TrafficModule,
      IncidentsModule,
      ConfigModule.forRoot({ isGlobal: true, envFilePath: '../.env' }),
      TypeOrmModule.forRootAsync({
