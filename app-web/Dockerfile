@@ -7,7 +7,6 @@ COPY ./package*.json ./
 RUN npm ci
 
 # Copier le reste et builder
-COPY ../.env .env
 COPY . ./
 
 RUN npm run build -- --output-path=dist

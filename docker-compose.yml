@@ -2,7 +2,9 @@
 services:
 
   app-web:
-    build: ./app-web
+    build:
+      context: ./app-web
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     depends_on:
