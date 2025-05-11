@@ -27,7 +27,7 @@ SUPMAP est une application mobile de navigation en temps réel basée sur **Open
    ```
 
 2. **Configurer les variables d’environnement :**
-   Charger le ficiher .env à la racine
+   Charger le ficiher .env à la racine et à la racine de l'appli web
    ```
 
 3. **Lancer les services avec Docker Compose :**
