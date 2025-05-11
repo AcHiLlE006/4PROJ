@@ -3,6 +3,14 @@ const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 
+// Charge les variables depuis le fichier .env
+const result = dotenv.config();
+
+if (result.error) {
+  console.error("❌ Impossible de charger le fichier .env :", result.error);
+  process.exit(1);
+}
+
 const apiUrl = process.env.API_URL;
 if (!apiUrl) {
   console.error("❌ Impossible de charger API_URL depuis .env");
